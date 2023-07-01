@@ -197,12 +197,12 @@ namespace Utility.PGPSignatureTools.Tests
             byte[] signature = GetSignature(text);
 
             Assert.NotNull(signature);
-            Assert.NotEqual(0, signature.Length);
+            Assert.NotEmpty(signature);
 
             byte[] message = PGPSignatureTools.PGPSignature.Verify(signature, publicKey);
 
             Assert.NotNull(message);
-            Assert.NotEqual(0, message.Length);
+            Assert.NotEmpty(message);
             Assert.Equal(text, Encoding.ASCII.GetString(message));
         }
 
@@ -216,7 +216,7 @@ namespace Utility.PGPSignatureTools.Tests
             byte[] signature = GetSignature(text);
 
             Assert.NotNull(signature);
-            Assert.NotEqual(0, signature.Length);
+            Assert.NotEmpty(signature);
 
             Exception ex = Record.Exception(() => PGPSignatureTools.PGPSignature.Verify(signature, string.Empty));
 
@@ -263,7 +263,7 @@ namespace Utility.PGPSignatureTools.Tests
             byte[] message = PGPSignatureTools.PGPSignature.Verify(signature, publicKey);
 
             Assert.NotNull(message);
-            Assert.NotEqual(0, message.Length);
+            Assert.NotEmpty(message);
             Assert.Equal(text, Encoding.ASCII.GetString(message));
         }
 
@@ -278,7 +278,7 @@ namespace Utility.PGPSignatureTools.Tests
             byte[] signature = GetSignature(text);
 
             Assert.NotNull(signature);
-            Assert.NotEqual(0, signature.Length);
+            Assert.NotEmpty(signature);
 
             Exception ex = Record.Exception(() => PGPSignatureTools.PGPSignature.Verify(signature, newPublicKey));
 
