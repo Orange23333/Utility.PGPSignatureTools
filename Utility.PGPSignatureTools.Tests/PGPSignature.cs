@@ -76,7 +76,7 @@ namespace Utility.PGPSignatureTools.Tests
         /// <summary>
         ///     The contents of the private and public key files.
         /// </summary>
-        private string privateKey, publicKey, newPublicKey, nullString;
+        private string privateKey, publicKey, newPublicKey, nullString = null;
 
         #endregion Private Fields
 
