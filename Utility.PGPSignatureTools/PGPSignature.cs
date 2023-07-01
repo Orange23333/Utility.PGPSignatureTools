@@ -144,8 +144,63 @@ namespace Utility.PGPSignatureTools
         /// </exception>
         public static byte[] Verify(byte[] input, string publicKey)
         {
-            return Verify(Encoding.ASCII.GetString(input), publicKey);
-        }
+			// create input streams from
+			Stream inputStream = new MemoryStream(input ?? new byte[0]);
+			Stream publicKeyStream = new MemoryStream(Encoding.UTF8.GetBytes(publicKey ?? string.Empty));
+
+			// enclose all operations in a try/catch. if we encounter any exceptions verification fails.
+			try
+			{
+				// lines taken pretty much verbatim from the bouncycastle example. not sure what it all does.
+				inputStream = PgpUtilities.GetDecoderStream(inputStream);
+
+				PgpObjectFactory pgpFact = new PgpObjectFactory(inputStream);
+				PgpCompressedData c1 = (PgpCompressedData)pgpFact.NextPgpObject();
+				pgpFact = new PgpObjectFactory(c1.GetDataStream());
+
+				PgpOnePassSignatureList p1 = (PgpOnePassSignatureList)pgpFact.NextPgpObject();
+				PgpOnePassSignature ops = p1[0];
+
+				PgpLiteralData p2 = (PgpLiteralData)pgpFact.NextPgpObject();
+				Stream dIn = p2.GetInputStream();
+				PgpPublicKeyRingBundle pgpRing = new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(publicKeyStream));
+				PgpPublicKey key = pgpRing.GetPublicKey(ops.KeyId);
+
+				// set up a memorystream to contain the message contained within the signature
+				MemoryStream memoryStream = new MemoryStream();
+
+				ops.InitVerify(key);
+
+				int ch;
+				while ((ch = dIn.ReadByte()) >= 0)
+				{
+					ops.Update((byte)ch);
+					memoryStream.WriteByte((byte)ch);
+				}
+
+				// save the contents of the memorystream to a byte array
+				byte[] retVal = memoryStream.ToArray();
+
+				memoryStream.Close();
+
+				PgpSignatureList p3 = (PgpSignatureList)pgpFact.NextPgpObject();
+				PgpSignature firstSig = p3[0];
+
+				// verify.
+				if (ops.Verify(firstSig))
+				{
+					return retVal;
+				}
+				else
+				{
+					throw new PgpDataValidationException();
+				}
+			}
+			catch (Exception)
+			{
+				throw new PgpDataValidationException();
+			}
+		}
 
         /// <summary>
         ///     Verifies the specified signature using the specified public key.
@@ -158,62 +213,7 @@ namespace Utility.PGPSignatureTools
         /// </exception>
         public static byte[] Verify(string input, string publicKey)
         {
-            // create input streams from
-            Stream inputStream = new MemoryStream(Encoding.UTF8.GetBytes(input ?? string.Empty));
-            Stream publicKeyStream = new MemoryStream(Encoding.UTF8.GetBytes(publicKey ?? string.Empty));
-
-            // enclose all operations in a try/catch. if we encounter any exceptions verification fails.
-            try
-            {
-                // lines taken pretty much verbatim from the bouncycastle example. not sure what it all does.
-                inputStream = PgpUtilities.GetDecoderStream(inputStream);
-
-                PgpObjectFactory pgpFact = new PgpObjectFactory(inputStream);
-                PgpCompressedData c1 = (PgpCompressedData)pgpFact.NextPgpObject();
-                pgpFact = new PgpObjectFactory(c1.GetDataStream());
-
-                PgpOnePassSignatureList p1 = (PgpOnePassSignatureList)pgpFact.NextPgpObject();
-                PgpOnePassSignature ops = p1[0];
-
-                PgpLiteralData p2 = (PgpLiteralData)pgpFact.NextPgpObject();
-                Stream dIn = p2.GetInputStream();
-                PgpPublicKeyRingBundle pgpRing = new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(publicKeyStream));
-                PgpPublicKey key = pgpRing.GetPublicKey(ops.KeyId);
-
-                // set up a memorystream to contain the message contained within the signature
-                MemoryStream memoryStream = new MemoryStream();
-
-                ops.InitVerify(key);
-
-                int ch;
-                while ((ch = dIn.ReadByte()) >= 0)
-                {
-                    ops.Update((byte)ch);
-                    memoryStream.WriteByte((byte)ch);
-                }
-
-                // save the contents of the memorystream to a byte array
-                byte[] retVal = memoryStream.ToArray();
-
-                memoryStream.Close();
-
-                PgpSignatureList p3 = (PgpSignatureList)pgpFact.NextPgpObject();
-                PgpSignature firstSig = p3[0];
-
-                // verify.
-                if (ops.Verify(firstSig))
-                {
-                    return retVal;
-                }
-                else
-                {
-                    throw new PgpDataValidationException();
-                }
-            }
-            catch (Exception)
-            {
-                throw new PgpDataValidationException();
-            }
+            return Verify(Encoding.UTF8.GetBytes(input ?? string.Empty), publicKey);
         }
 
         #endregion Public Methods
