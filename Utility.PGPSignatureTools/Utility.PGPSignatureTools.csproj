@@ -8,8 +8,8 @@
 Code by JP Dillingham, Package by Orange233</Description>
     <Product>Utility.PGPSignatureTools</Product>
     <Copyright>Copyright (c) 2017 JP Dillingham (jp@dillingham.ws)</Copyright>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>JP Dillingham, Orange233</Authors>
     <PackageReleaseNotes>A C# Class Library for signing and verifying data using PGP encryption.</PackageReleaseNotes>
@@ -19,6 +19,7 @@ Code by JP Dillingham, Package by Orange233</Description>
     <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Version>1.0.1</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DocumentationFile>bin\Release\Utility.PGPSignatureTools.XML</DocumentationFile>
