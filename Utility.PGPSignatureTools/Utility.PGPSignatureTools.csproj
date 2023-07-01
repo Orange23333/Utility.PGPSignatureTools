@@ -20,6 +20,7 @@ Code by JP Dillingham, Package by Orange233</Description>
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Version>1.0.1</Version>
+    <PackageId>Orange233.Utility.PGPSignatureTools</PackageId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DocumentationFile>bin\Release\Utility.PGPSignatureTools.XML</DocumentationFile>
